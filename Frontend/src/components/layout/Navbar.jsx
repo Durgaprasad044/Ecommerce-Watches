@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FiSearch, FiShoppingCart, FiUser, FiHeart } from 'react-icons/fi';
+import { useCart } from '../../context/CartContext';
 
 export default function Navbar() {
+  const { cartCount } = useCart();
   const linkClass = ({ isActive }) => `text-sm font-medium transition-colors hover:text-gray-900 ${isActive ? 'text-gray-900' : 'text-gray-500'}`;
   
   return (
@@ -26,9 +28,13 @@ export default function Navbar() {
             <Link to="/wishlist" className="text-gray-600 hover:text-gray-900 transition-colors">
               <FiHeart className="w-5 h-5" />
             </Link>
-            <Link to="/cart" className="text-gray-600 hover:text-gray-900 transition-colors relative">
+            <Link to="/cart" className="text-gray-600 hover:text-gray-900 transition-colors relative flex items-center">
               <FiShoppingCart className="w-5 h-5" />
-              <span className="absolute -top-1.5 -right-1.5 bg-gray-900 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">2</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-gray-900 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
             <Link to="/profile" className="text-gray-600 hover:text-gray-900 transition-colors pl-2 border-l border-gray-200">
               <FiUser className="w-5 h-5" />

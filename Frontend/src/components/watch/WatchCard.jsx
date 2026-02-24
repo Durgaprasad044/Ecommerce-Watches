@@ -1,9 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PriceTag from './PriceTag';
-import { FiHeart, FiStar } from 'react-icons/fi';
+import { FiHeart, FiStar, FiShoppingCart } from 'react-icons/fi';
+import { useCart } from '../../context/CartContext';
 
 export default function WatchCard({ watch }) {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    addToCart(watch);
+  };
+
   return (
     <div className="group flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 relative">
       <button className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur rounded-full text-gray-400 hover:text-red-500 transition-colors z-10">
@@ -15,7 +23,7 @@ export default function WatchCard({ watch }) {
       <div className="p-4 flex flex-col flex-grow">
         <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{watch.brand}</div>
         <Link to={`/watch/${watch.id}`} className="text-base flex-grow font-bold text-gray-900 leading-snug hover:underline line-clamp-2 mb-2">
-          {watch.name}
+          {watch.name || watch.model}
         </Link>
         <div className="flex items-center gap-1 mb-3">
           <FiStar className="w-4 h-4 text-yellow-500 fill-current" />
@@ -24,6 +32,13 @@ export default function WatchCard({ watch }) {
         </div>
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
           <PriceTag price={watch.price} discountPrice={watch.discountPrice} />
+          <button 
+            onClick={handleAddToCart}
+            className="p-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
+            title="Add to Cart"
+          >
+            <FiShoppingCart />
+          </button>
         </div>
       </div>
     </div>
