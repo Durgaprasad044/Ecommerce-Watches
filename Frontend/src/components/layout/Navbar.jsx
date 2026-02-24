@@ -14,7 +14,7 @@ export default function Navbar() {
               Watch<span className="text-gray-400">Vault</span>
             </Link>
             <div className="hidden md:flex gap-6">
-              <NavLink to="/" className={linkClass}>Home</NavLink>
+              <NavLink to="/home" className={linkClass}>Home</NavLink>
               <NavLink to="/catalog" className={linkClass}>Catalog</NavLink>
             </div>
           </div>
@@ -32,6 +32,9 @@ export default function Navbar() {
             </Link>
             <Link to="/profile" className="text-gray-600 hover:text-gray-900 transition-colors pl-2 border-l border-gray-200">
               <FiUser className="w-5 h-5" />
+            </Link>
+            <Link to="/auth/login" className="ml-2 bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-gray-800 transition-colors whitespace-nowrap">
+              Login
             </Link>
           </div>
         </div>

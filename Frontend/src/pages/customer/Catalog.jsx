@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PageWrapper from '../../components/layout/PageWrapper';
 import WatchGrid from '../../components/watch/WatchGrid';
 import { FiFilter } from 'react-icons/fi';
+import Spinner from '../../components/common/Spinner';
 
 export default function Catalog() {
-  const dummyWatches = Array.from({length: 12}).map((_, i) => ({
-    id: String(i + 1),
-    name: ['Chronograph Pro', 'Diver Blue', 'Gold Standard', 'Minimalist Black'][i % 4] + ` ${i}`,
-    brand: ['Rolex', 'Omega', 'Seiko', 'Tissot'][i % 4],
-    price: 1000 + (i * 500),
-    image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80'
-  }));
+  const [watches, setWatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [brands, setBrands] = useState([]);
+
+  useEffect(() => {
+    // TODO: Fetch watches and filters from API
+    // example: watchService.getWatches().then(setWatches).finally(() => setLoading(false))
+    setLoading(false);
+  }, []);
 
   return (
     <PageWrapper>
@@ -31,12 +34,12 @@ export default function Catalog() {
               <div>
                 <h3 className="text-sm font-semibold mb-3">Brands</h3>
                 <div className="space-y-2">
-                  {['Rolex', 'Omega', 'Seiko', 'Tissot'].map(b => (
-                    <label key={b} className="flex items-center gap-2 cursor-pointer">
+                  {brands.length > 0 ? brands.map(b => (
+                    <label key={b.id || b} className="flex items-center gap-2 cursor-pointer">
                       <input type="checkbox" className="rounded border-gray-300 text-gray-900 focus:ring-gray-900" />
-                      <span className="text-sm text-gray-600">{b}</span>
+                      <span className="text-sm text-gray-600">{b.name || b}</span>
                     </label>
-                  ))}
+                  )) : <p className="text-xs text-gray-500">No brands found.</p>}
                 </div>
               </div>
               <div className="border-t border-gray-100 pt-6">
@@ -53,7 +56,7 @@ export default function Catalog() {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           <div className="flex justify-between items-center mb-6">
-            <span className="text-sm text-gray-500 font-medium">{dummyWatches.length} Results</span>
+            <span className="text-sm text-gray-500 font-medium">{watches.length} Results</span>
             <select className="border-gray-300 text-sm rounded-md focus:ring-gray-900 focus:border-gray-900">
               <option>Sort by: Recommended</option>
               <option>Price: Low to High</option>
@@ -61,13 +64,21 @@ export default function Catalog() {
               <option>Newest Arrivals</option>
             </select>
           </div>
-          <WatchGrid watches={dummyWatches} />
           
-          <div className="mt-12 flex justify-center">
-            <button className="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition">
-              Load More
-            </button>
-          </div>
+          {loading ? (
+            <div className="flex justify-center py-12"><Spinner /></div>
+          ) : (
+            <>
+              <WatchGrid watches={watches} />
+              {watches.length > 0 && (
+                <div className="mt-12 flex justify-center">
+                  <button className="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-full hover:bg-gray-50 transition">
+                    Load More
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </PageWrapper>

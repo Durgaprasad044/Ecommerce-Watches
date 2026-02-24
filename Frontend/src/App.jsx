@@ -53,7 +53,6 @@ import usePagination from './hooks/usePagination.js';
 import useDebounce from './hooks/useDebounce.js';
 import Login from './pages/auth/Login.jsx';
 import Register from './pages/auth/Register.jsx';
-import Home from './pages/customer/Home.jsx';
 import Catalog from './pages/customer/Catalog.jsx';
 import WatchDetail from './pages/customer/WatchDetail.jsx';
 import Cart from './pages/customer/Cart.jsx';

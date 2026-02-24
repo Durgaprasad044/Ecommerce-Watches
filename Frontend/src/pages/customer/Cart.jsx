@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PageWrapper from '../../components/layout/PageWrapper';
 import EmptyState from '../../components/common/EmptyState';
 import Button from '../../components/common/Button';
 import PriceTag from '../../components/watch/PriceTag';
-import { FiTrash2, FiMinus, FiPlus } from 'react-icons/fi';
-import { Link, useNavigate } from 'react-router-dom';
+import Spinner from '../../components/common/Spinner';
+import { FiTrash2, FiMinus, FiPlus, FiShield } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 export default function Cart() {
   const navigate = useNavigate();
-  // Dummy
-  const items = [
-    { id: '1', name: 'Oyster Perpetual', brand: 'Rolex', price: 6100, qty: 1, image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=200&q=80' }
-  ];
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // TODO: Fetch cart items from API or Context
+    // example: cartService.getCart().then(setItems).finally(() => setLoading(false))
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <PageWrapper className="flex justify-center items-center"><Spinner className="mt-20"/></PageWrapper>;
+  }
 
   if (!items.length) {
     return (
@@ -21,7 +30,7 @@ export default function Cart() {
     );
   }
 
-  const subtotal = items.reduce((acc, i) => acc + i.price * i.qty, 0);
+  const subtotal = items.reduce((acc, i) => acc + (i.price * i.qty), 0);
 
   return (
     <PageWrapper>
@@ -39,11 +48,11 @@ export default function Cart() {
               <div key={item.id} className="grid grid-cols-1 sm:grid-cols-12 gap-4 p-4 border-b border-gray-100 items-center">
                 <div className="col-span-1 border-b pb-4 sm:border-0 sm:pb-0 sm:col-span-6 flex gap-4 items-center">
                   <div className="h-20 w-20 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
-                    <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+                    {item.image ? <img src={item.image} alt={item.name} className="h-full w-full object-cover" /> : <div className="h-full w-full bg-gray-200"></div>}
                   </div>
                   <div>
                     <p className="font-bold text-gray-900 leading-tight">{item.name}</p>
-                    <p className="text-sm text-gray-500 mb-2">{item.brand}</p>
+                    <p className="text-sm text-gray-500 mb-2">{item.brand?.name || item.brand}</p>
                     <button className="text-red-500 text-sm flex items-center gap-1 hover:underline"><FiTrash2 /> Remove</button>
                   </div>
                 </div>
@@ -53,7 +62,7 @@ export default function Cart() {
                   <button className="p-1 border rounded-md hover:bg-gray-50"><FiPlus /></button>
                 </div>
                 <div className="col-span-1 sm:col-span-3 text-right font-bold text-lg">
-                  $<PriceTag price={item.price * item.qty} />
+                  <PriceTag price={item.price * item.qty} />
                 </div>
               </div>
             ))}
@@ -67,11 +76,11 @@ export default function Cart() {
             <div className="space-y-4 text-sm mb-6 border-b border-gray-200 pb-6">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${(subtotal).toLocaleString()}</span>
+                <span className="font-medium"><PriceTag price={subtotal} /></span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
-                <span className="font-medium text-green-600">Free</span>
+                <span className="font-medium text-green-600">Calculated at checkout</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Taxes</span>
@@ -80,7 +89,7 @@ export default function Cart() {
             </div>
             <div className="flex justify-between items-end mb-8">
               <span className="font-bold text-lg text-gray-900">Total</span>
-              <span className="font-extrabold text-2xl text-gray-900">${(subtotal).toLocaleString()}</span>
+              <span className="font-extrabold text-2xl text-gray-900"><PriceTag price={subtotal} /></span>
             </div>
             <Button size="lg" className="w-full mb-4">Proceed to Checkout</Button>
             <p className="text-xs text-center text-gray-500 flex items-center justify-center gap-1">
