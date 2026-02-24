@@ -79,9 +79,11 @@ import formatDate from './utils/formatDate.js';
 import validateSchema from './utils/validateSchema.js';
 import * as constants from './utils/constants.js';
 import './styles/globals.css';
-
+import { CartProvider } from "./context/CartContext";
 function App() {
-  return <AppRouter />;
+  return( <CartProvider> 
+    <AppRouter />
+    </CartProvider>);
 }
 
 export default App;
