@@ -78,16 +78,11 @@ import RoleRoute from './routes/RoleRoute.jsx';
 import formatCurrency from './utils/formatCurrency.js';
 import formatDate from './utils/formatDate.js';
 import validateSchema from './utils/validateSchema.js';
-import constants from './utils/constants.js';
+import * as constants from './utils/constants.js';
 import './styles/globals.css';
 
 function App() {
-  return (
-    <div>
-      <h1>WatchVault Frontend Architecture</h1>
-      <p>All files are connected successfully.</p>
-    </div>
-  );
+  return <AppRouter />;
 }
 
 export default App;

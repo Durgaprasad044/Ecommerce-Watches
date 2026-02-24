@@ -1,1 +1,7 @@
-/* Globals */
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply text-gray-900 bg-white antialiased selection:bg-gray-900 selection:text-white;
+  }
+}
