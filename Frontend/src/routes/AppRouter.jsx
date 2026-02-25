@@ -10,6 +10,7 @@ import Profile from '../pages/customer/Profile';
 
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
+import ProtectedRoute from './ProtectedRoute';
 
 import Dashboard from '../pages/vendor/Dashboard';
 import ManageWatches from '../pages/vendor/ManageWatches';
@@ -23,13 +24,15 @@ export default function AppRouter() {
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/watch/:id" element={<WatchDetail />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/profile" element={<Profile />} />
         
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         
-        <Route path="/vendor" element={<Dashboard />} />
-        <Route path="/vendor/products" element={<ManageWatches />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/vendor" element={<Dashboard />} />
+          <Route path="/vendor/products" element={<ManageWatches />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
