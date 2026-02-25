@@ -2,9 +2,11 @@ import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FiSearch, FiShoppingCart, FiUser, FiHeart } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const { cartCount } = useCart();
+  const { currentUser, logout } = useAuth();
   const linkClass = ({ isActive }) => `text-sm font-medium transition-colors hover:text-gray-900 ${isActive ? 'text-gray-900' : 'text-gray-500'}`;
   
   return (
@@ -39,9 +41,15 @@ export default function Navbar() {
             <Link to="/profile" className="text-gray-600 hover:text-gray-900 transition-colors pl-2 border-l border-gray-200">
               <FiUser className="w-5 h-5" />
             </Link>
-            <Link to="/auth/login" className="ml-2 bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-gray-800 transition-colors whitespace-nowrap">
-              Login
-            </Link>
+            {currentUser ? (
+              <button onClick={logout} className="ml-2 bg-red-600 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-red-700 transition-colors whitespace-nowrap">
+                Logout
+              </button>
+            ) : (
+              <Link to="/auth/login" className="ml-2 bg-gray-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-gray-800 transition-colors whitespace-nowrap">
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </div>
