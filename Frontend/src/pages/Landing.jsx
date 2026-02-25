@@ -1,7 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight, FiShield, FiCheckCircle, FiLock, FiGlobe, FiStar } from 'react-icons/fi';
-
+import luxuryImg from "../assets/luxury.png";
+import smartImg from "../assets/smart.png";
+import limitedImg from "../assets/limited.png";
+import heritageImg from "../assets/heritage.png";
 export default function Landing() {
   const navigate = useNavigate();
 
@@ -52,13 +55,19 @@ export default function Landing() {
               Every timepiece on our platform undergoes rigorous authentication by our master horologists, ensuring provenance and absolute integrity.
             </p>
           </div>
-          <div className="relative aspect-square lg:aspect-[4/5] bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 shadow-2xl group">
-             {/* Placeholder for a lifestyle/macro watch image */}
-             <div className="absolute inset-0 bg-gradient-to-tr from-gray-800 to-black opacity-50 group-hover:opacity-30 transition-opacity duration-700"></div>
-             <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-gray-800 font-black text-6xl opacity-20 tracking-tighter">WATCHVAULT</span>
-             </div>
-          </div>
+          <div className="relative aspect-square lg:aspect-[4/5] rounded-2xl overflow-hidden border border-gray-800 shadow-2xl group">
+
+  {/* ⭐ HERITAGE IMAGE */}
+  <img
+    src={heritageImg}
+    alt="WatchVault Heritage"
+    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+  />
+
+  {/* DARK OVERLAY */}
+  <div className="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div>
+
+</div>
         </div>
       </section>
 
@@ -88,31 +97,50 @@ export default function Landing() {
         </div>
       </section>
 
+      
       {/* 4. Collections Preview */}
-      <section className="py-32 px-4 bg-black">
-        <div className="max-w-7xl mx-auto">
-           <div className="text-center mb-20">
-            <h2 className="text-sm tracking-[0.2em] font-bold text-gray-500 uppercase mb-4">Curations</h2>
-            <h3 className="text-3xl md:text-5xl font-bold text-white">Explore The Vault</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] md:h-[500px]">
-             {[
-               { name: 'Luxury Collection', theme: 'from-gray-900 to-black' },
-               { name: 'Smart Watches', theme: 'from-gray-800 to-black' },
-               { name: 'Limited Edition', theme: 'from-zinc-900 to-black' }
-             ].map((col, idx) => (
-               <div key={idx} onClick={() => navigate('/home')} className={`relative rounded-2xl overflow-hidden cursor-pointer group bg-gradient-to-t ${col.theme} border border-gray-800 hover:border-gray-500 transition-all duration-500 flex items-end p-8`}>
-                  <div className="absolute inset-0 bg-black opacity-20 group-hover:opacity-0 transition-opacity duration-500"></div>
-                  <div className="relative z-10 w-full flex justify-between items-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                     <h4 className="text-2xl font-bold text-white">{col.name}</h4>
-                     <FiArrowRight className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  </div>
-               </div>
-             ))}
+<section className="py-32 px-4 bg-black">
+  <div className="max-w-7xl mx-auto">
+    <div className="text-center mb-20">
+      <h2 className="text-sm tracking-[0.2em] font-bold text-gray-500 uppercase mb-4">
+        Curations
+      </h2>
+      <h3 className="text-3xl md:text-5xl font-bold text-white">
+        Explore The Vault
+      </h3>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] md:h-[500px]">
+      {[
+        { name: "Luxury Collection", img: luxuryImg },
+        { name: "Smart Watches", img: smartImg },
+        { name: "Limited Edition", img: limitedImg },
+      ].map((col, idx) => (
+        <div
+          key={idx}
+          onClick={() => navigate("/home")}
+          className="relative rounded-2xl overflow-hidden cursor-pointer group border border-gray-800 hover:border-gray-500 transition-all duration-500 flex items-end p-8"
+        >
+          {/* ⭐ IMAGE BACKGROUND */}
+          <img
+            src={col.img}
+            alt={col.name}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          />
+
+          {/* DARK OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+
+          {/* TEXT */}
+          <div className="relative z-10 w-full flex justify-between items-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+            <h4 className="text-2xl font-bold text-white">{col.name}</h4>
+            <FiArrowRight className="text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </div>
         </div>
-      </section>
-
+      ))}
+    </div>
+  </div>
+</section>
       {/* 5. Statistics */}
       <section className="py-24 border-y border-gray-900 bg-zinc-950">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-gray-800">
