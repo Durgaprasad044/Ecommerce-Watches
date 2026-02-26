@@ -15,3 +15,4 @@ export const watches = [
   { id: 11, brand: 'Audemars Piguet', model: 'Royal Oak Offshore', name: 'Audemars Piguet Royal Oak Offshore', price: 33400, image: 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?q=80&w=400&auto=format&fit=crop' },
   { id: 12, brand: 'Audemars Piguet', model: 'Code 11.59', name: 'Audemars Piguet Code 11.59', price: 32600, image: 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?q=80&w=400&auto=format&fit=crop' },
 ];
+

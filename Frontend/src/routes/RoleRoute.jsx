@@ -1,12 +1,16 @@
 import { Navigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext";
 
 export default function RoleRoute({ children, role }) {
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
 
-  if (!user) return <Navigate to="/auth/login" />;
+  if (!currentUser) {
+    return <Navigate to="/auth/login" />;
+  }
 
-  if (user.role !== role) return <Navigate to="/home" />;
+  if (role && currentUser.role !== role) {
+    return <Navigate to="/home" />;
+  }
 
   return children;
 }

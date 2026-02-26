@@ -42,7 +42,7 @@ import RevenueChart from './components/vendor/RevenueChart.jsx';
 import InventoryTable from './components/vendor/InventoryTable.jsx';
 import LowStockAlert from './components/vendor/LowStockAlert.jsx';
 import TopWatches from './components/vendor/TopWatches.jsx';
-import AuthContext from './context/AuthContext.jsx';
+import { AuthContext } from './context/AuthContext.jsx';
 import CartContext from './context/CartContext.jsx';
 import WishlistContext from './context/WishlistContext.jsx';
 import useAuth from './hooks/useAuth.js';
