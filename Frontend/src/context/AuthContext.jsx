@@ -37,11 +37,17 @@ export function AuthProvider({ children }) {
     }
   };
 
-  async function register(email, password) {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await executeBackendLogin(cred.user);
-    return cred;
-  }
+  async function register(email, password, role) {
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+  // ⭐ SAVE ROLE (customer / vendor)
+  localStorage.setItem("role", role || "customer");
+
+  // existing backend login
+  await executeBackendLogin(cred.user);
+
+  return cred;
+}
 
   async function login(email, password) {
     const cred = await signInWithEmailAndPassword(auth, email, password);

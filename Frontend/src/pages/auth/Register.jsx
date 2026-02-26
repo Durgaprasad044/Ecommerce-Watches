@@ -7,46 +7,83 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState('');
+  const [role, setRole] = useState("customer");
   const [loading, setLoading] = useState(false);
   const { currentUser, register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    if (currentUser) {
-      navigate('/home');
-    }
-  }, [currentUser, navigate]);
+  // 🔁 Redirect based on role when already logged in
+React.useEffect(() => {
+  if (currentUser) {
+    const role = localStorage.getItem("role");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (password !== passwordConfirm) {
-      return setError('Passwords do not match');
+    if (role === "vendor") {
+      navigate("/vendor/dashboard");
+    } else {
+      navigate("/home");
     }
-    try {
-      setError('');
-      setLoading(true);
-      await register(email, password);
-      navigate('/home');
-    } catch (err) {
-      setError('Failed to create an account: ' + err.message);
+  }
+}, [currentUser, navigate]);
+
+
+// ✅ REGISTER SUBMIT
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (password !== passwordConfirm) {
+    return setError("Passwords do not match");
+  }
+
+  try {
+    setError("");
+    setLoading(true);
+
+    // create firebase user
+    await register(email, password, role);
+
+    // ⭐ SAVE ROLE LOCALLY (FRONTEND PHASE)
+    localStorage.setItem("role", role);
+
+    // ⭐ ROLE BASED REDIRECT
+    if (role === "vendor") {
+      navigate("/vendor/dashboard");
+    } else {
+      navigate("/home");
     }
+
+  } catch (err) {
+    setError("Failed to create an account: " + err.message);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
-  const handleGoogleLogin = async () => {
-    try {
-      setError('');
-      setLoading(true);
-      await loginWithGoogle();
-      navigate('/home');
-    } catch (err) {
-      if (err.code !== 'auth/popup-closed-by-user') {
-        setError('Failed to sign up with Google: ' + err.message);
-      }
-    } finally {
-      setLoading(false);
+
+// ✅ GOOGLE REGISTER
+const handleGoogleLogin = async () => {
+  try {
+    setError("");
+    setLoading(true);
+
+    await loginWithGoogle();
+
+    // ⭐ IMPORTANT — SAVE ROLE
+    localStorage.setItem("role", role);
+
+    if (role === "vendor") {
+      navigate("/vendor/dashboard");
+    } else {
+      navigate("/home");
     }
-  };
+
+  } catch (err) {
+    if (err.code !== "auth/popup-closed-by-user") {
+      setError("Failed to sign up with Google: " + err.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-80px)] bg-gray-50">
@@ -84,6 +121,18 @@ const Register = () => {
               onChange={(e) => setPasswordConfirm(e.target.value)}
             />
           </div>
+          {/* ROLE SELECT */}
+<div>
+  <label className="block text-gray-700 font-medium mb-1">Account Type</label>
+  <select
+    value={role}
+    onChange={(e) => setRole(e.target.value)}
+    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900"
+  >
+    <option value="customer">Customer</option>
+    <option value="vendor">Vendor</option>
+  </select>
+</div>
           <button 
             disabled={loading}
             className="w-full py-2 px-4 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition disabled:opacity-70 flex justify-center items-center"
