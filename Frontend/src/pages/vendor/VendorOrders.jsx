@@ -1,5 +1,5 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import { getVendorOrders } from "../../services/orderService";
+//import { getVendorOrders } from "../../services/orderService";
 
 export default function VendorOrders(){
 
