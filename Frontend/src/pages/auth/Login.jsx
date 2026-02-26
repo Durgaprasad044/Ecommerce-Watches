@@ -8,46 +8,70 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { currentUser, login, loginWithGoogle } = useAuth();
+  const [role, setRole] = useState("customer");
   const navigate = useNavigate();
 
   // If already logged in, redirect to home
   React.useEffect(() => {
     if (currentUser) {
-      navigate('/home');
+      const role = localStorage.getItem("role");
+
+if (role === "vendor") {
+  navigate("/vendor/dashboard");
+} else {
+  navigate("/home");
+}
     }
   }, [currentUser, navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setError('');
-      setLoading(true);
-      await login(email, password);
-      navigate('/home');
-    } catch (err) {
-      setError('Failed to log in. Check your credentials.');
-    } finally {
-      setLoading(false);
+  e.preventDefault();
+  try {
+    setError('');
+    setLoading(true);
+
+    await login(email, password);
+
+    localStorage.setItem("role", role);
+
+    if (role === "vendor") {
+      navigate("/vendor/dashboard");
+    } else {
+      navigate("/home");
     }
-  };
+
+  } catch (err) {
+    setError('Failed to log in. Check your credentials.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGoogleLogin = async () => {
-    try {
-      setError('');
-      setLoading(true);
-      await loginWithGoogle();
-      navigate('/home');
-    } catch (err) {
-      if (err.code === 'auth/popup-closed-by-user') {
-        setError('Login cancelled by user.');
-      } else {
-        setError('Failed to log in with Google: ' + err.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setError('');
+    setLoading(true);
 
+    await loginWithGoogle();
+
+    localStorage.setItem("role", role);
+
+    if (role === "vendor") {
+      navigate("/vendor/dashboard");
+    } else {
+      navigate("/home");
+    }
+
+  } catch (err) {
+    if (err.code === 'auth/popup-closed-by-user') {
+      setError('Login cancelled by user.');
+    } else {
+      setError('Failed to log in with Google: ' + err.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-80px)] bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-md border border-gray-100">
@@ -56,6 +80,32 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-700 font-medium mb-1">Email</label>
+            {/* ROLE SELECT */}
+<div className="flex bg-gray-100 rounded-lg p-1">
+  <button
+    type="button"
+    onClick={() => setRole("customer")}
+    className={`flex-1 py-2 rounded-md font-semibold transition ${
+      role === "customer"
+        ? "bg-gray-900 text-white"
+        : "text-gray-700"
+    }`}
+  >
+    Customer
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setRole("vendor")}
+    className={`flex-1 py-2 rounded-md font-semibold transition ${
+      role === "vendor"
+        ? "bg-gray-900 text-white"
+        : "text-gray-700"
+    }`}
+  >
+    Vendor
+  </button>
+</div>
             <input 
               type="email" 
               required

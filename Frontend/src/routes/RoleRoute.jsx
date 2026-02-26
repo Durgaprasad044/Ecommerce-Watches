@@ -1,16 +1,18 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
 
-export default function RoleRoute({ children, role }) {
-  const { currentUser } = useAuth();
+export default function RoleRoute({ role }) {
 
-  if (!currentUser) {
-    return <Navigate to="/auth/login" />;
+  // ⭐ get role from localStorage (your current system)
+  const userRole = localStorage.getItem("role");
+
+  if (!userRole) {
+    return <Navigate to="/auth/login" replace />;
   }
 
-  if (role && currentUser.role !== role) {
-    return <Navigate to="/home" />;
+  if (userRole !== role) {
+    return <Navigate to="/home" replace />;
   }
 
-  return children;
+  return <Outlet />;
 }

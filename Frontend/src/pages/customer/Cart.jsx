@@ -5,8 +5,7 @@ import Button from '../../components/common/Button';
 import PriceTag from '../../components/watch/PriceTag';
 import { FiTrash2, FiMinus, FiPlus, FiShield } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import  useCart  from '../../context/CartContext';
-
+import useCart from "../../hooks/useCart";
 export default function Cart() {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();

@@ -46,7 +46,7 @@ import { AuthContext } from './context/AuthContext.jsx';
 import CartContext from './context/CartContext.jsx';
 import WishlistContext from './context/WishlistContext.jsx';
 import useAuth from './hooks/useAuth.js';
-import useCart from './hooks/useCart.js';
+import { CartProvider } from "./context/CartContext.jsx";
 import useWishlist from './hooks/useWishlist.js';
 import useFilters from './hooks/useFilters.js';
 import usePagination from './hooks/usePagination.js';
@@ -79,7 +79,7 @@ import formatDate from './utils/formatDate.js';
 import validateSchema from './utils/validateSchema.js';
 import * as constants from './utils/constants.js';
 import './styles/globals.css';
-import { CartProvider } from "./context/CartContext";
+
 function App() {
   return( <CartProvider> 
     <AppRouter />
