@@ -18,38 +18,72 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  function register(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password);
+  // Helper to exchange Firebase token for Backend JWT
+  const executeBackendLogin = async (firebaseUser) => {
+    try {
+      const idToken = await firebaseUser.getIdToken(true);
+      // In a real scenario, this POSTs to the backend:
+      // const res = await fetch('/api/v1/auth/firebase-login', { ... });
+      // const data = await res.json();
+      
+      // MOCK: simulate backend giving us a JWT
+      const mockBackendJwt = `mock_jwt_${idToken.substring(0, 10)}`;
+      localStorage.setItem('watchVaultToken', mockBackendJwt);
+      console.log('Backend JWT stored successfully');
+    } catch (err) {
+      console.error('Failed to get backend JWT:', err);
+    }
+  };
+
+  async function register(email, password) {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await executeBackendLogin(cred.user);
+    return cred;
   }
 
-  function login(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+  async function login(email, password) {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    await executeBackendLogin(cred.user);
+    return cred;
   }
 
-  function logout() {
-    return signOut(auth);
+  async function logout() {
+    await signOut(auth);
+    localStorage.removeItem('watchVaultToken');
   }
 
-  function loginWithGoogle() {
+  async function loginWithGoogle() {
     const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({
-      prompt: 'select_account'
-    });
-    return signInWithPopup(auth, provider);
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const cred = await signInWithPopup(auth, provider);
+    await executeBackendLogin(cred.user);
+    return cred;
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setCurrentUser(user);
+    // onAuthStateChanged fires automatically when Firebase detects a persistent session
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        // Refresh backend token on load if needed
+        await executeBackendLogin(user);
+      } else {
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('watchVaultToken');
+      }
       setLoading(false);
     });
-
     return unsubscribe;
   }, []);
 
   const value = {
     currentUser,
+    isAuthenticated,
+    loading,
     login,
     register,
     logout,
@@ -58,9 +92,10 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {/* We render children even if loading, because ProtectedRoute will handle the spinner */}
+      {children}
     </AuthContext.Provider>
   );
 }
 
-export default AuthContext;
+export { AuthContext };

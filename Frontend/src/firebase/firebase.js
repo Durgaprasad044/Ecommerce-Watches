@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAAGsC81r_M6TrGxa3JyPvtq-eN8zOkZbU",
@@ -13,4 +13,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// Explicitly set persistence to LOCAL (persists until explicit logout)
+setPersistence(auth, browserLocalPersistence)
+  .catch((error) => console.error("Firebase persistence error:", error));
+
 export default app;
