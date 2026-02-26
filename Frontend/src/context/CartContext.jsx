@@ -26,6 +26,20 @@ export function CartProvider({ children }) {
     });
   };
 
+  // UPDATE QUANTITY
+  const updateQuantity = (productId, newQuantity) => {
+    if (newQuantity < 1) {
+      // Remove item if quantity drops below 1
+      setCartItems((prev) => prev.filter((item) => item.id !== productId));
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
   // REMOVE
   const removeFromCart = (productId) => {
     setCartItems((prev) =>
@@ -44,14 +58,26 @@ export function CartProvider({ children }) {
     );
   }, [cartItems]);
 
+  // ⭐ CART TOTAL (for Order Summary)
+  const cartTotal = useMemo(() => {
+    if (!cartItems || cartItems.length === 0) return 0;
+    return cartItems.reduce((sum, item) => {
+      const price = Number(item.price) || 0;
+      const quantity = Number(item.quantity) || 1;
+      return sum + price * quantity;
+    }, 0);
+  }, [cartItems]);
+
   return (
     <CartContext.Provider
       value={{
         cartItems,
         addToCart,
+        updateQuantity,
         removeFromCart,
         clearCart,
         cartCount,
+        cartTotal,
       }}
     >
       {children}

@@ -15,6 +15,9 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
+// In-memory token — dies on page refresh (never persisted to localStorage)
+let backendToken = null;
+
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,30 +27,30 @@ export function AuthProvider({ children }) {
   const executeBackendLogin = async (firebaseUser) => {
     try {
       const idToken = await firebaseUser.getIdToken(true);
-      // In a real scenario, this POSTs to the backend:
-      // const res = await fetch('/api/v1/auth/firebase-login', { ... });
+      // TODO: Replace with actual backend call:
+      // const res = await fetch('/api/v1/auth/firebase-login', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ token: idToken })
+      // });
       // const data = await res.json();
-      
-      // MOCK: simulate backend giving us a JWT
-      const mockBackendJwt = `mock_jwt_${idToken.substring(0, 10)}`;
-      localStorage.setItem('watchVaultToken', mockBackendJwt);
-      console.log('Backend JWT stored successfully');
+      // backendToken = data.data.access_token;
+
+      // TEMP: use Firebase ID token directly until backend integration
+      backendToken = idToken;
+      window.__authToken = backendToken; // expose to axiosInstance
     } catch (err) {
       console.error('Failed to get backend JWT:', err);
     }
   };
 
   async function register(email, password, role) {
-  const cred = await createUserWithEmailAndPassword(auth, email, password);
-
-  // ⭐ SAVE ROLE (customer / vendor)
-  localStorage.setItem("role", role || "customer");
-
-  // existing backend login
-  await executeBackendLogin(cred.user);
-
-  return cred;
-}
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    // Role is stored in-memory, NOT localStorage
+    currentUser && (currentUser._role = role || 'customer');
+    await executeBackendLogin(cred.user);
+    return cred;
+  }
 
   async function login(email, password) {
     const cred = await signInWithEmailAndPassword(auth, email, password);
@@ -57,7 +60,9 @@ export function AuthProvider({ children }) {
 
   async function logout() {
     await signOut(auth);
-    localStorage.removeItem('watchVaultToken');
+    // Clear in-memory token
+    backendToken = null;
+    window.__authToken = null;
   }
 
   async function loginWithGoogle() {
@@ -69,21 +74,27 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    // onAuthStateChanged fires automatically when Firebase detects a persistent session
+    // With inMemoryPersistence, onAuthStateChanged fires with null after refresh
+    // So user is automatically logged out on page reload
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
         setIsAuthenticated(true);
-        // Refresh backend token on load if needed
         await executeBackendLogin(user);
       } else {
         setCurrentUser(null);
         setIsAuthenticated(false);
-        localStorage.removeItem('watchVaultToken');
+        backendToken = null;
+        window.__authToken = null;
       }
       setLoading(false);
     });
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      // Cleanup on unmount
+      backendToken = null;
+      window.__authToken = null;
+    };
   }, []);
 
   const value = {
@@ -98,7 +109,6 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {/* We render children even if loading, because ProtectedRoute will handle the spinner */}
       {children}
     </AuthContext.Provider>
   );

@@ -16,9 +16,24 @@ const ORDER_STATUSES = {
 };
 
 const PAYMENT_METHODS = {
-  STRIPE: 'stripe',
+  RAZORPAY: 'razorpay',
   COD: 'cod',
   WALLET: 'wallet',
+};
+
+const PAYMENT_STATUSES = {
+  PENDING: 'pending',
+  PAID: 'paid',
+  FAILED: 'failed',
+  REFUNDED: 'refunded',
+};
+
+const TRACKING_STATUSES = {
+  PLACED: 'placed',
+  SHIPPED: 'shipped',
+  OUT_FOR_DELIVERY: 'out_for_delivery',
+  DELIVERED: 'delivered',
+  CANCELLED: 'cancelled',
 };
 
 const NOTIFICATION_TYPES = {
@@ -48,6 +63,8 @@ module.exports = {
   USER_ROLES,
   ORDER_STATUSES,
   PAYMENT_METHODS,
+  PAYMENT_STATUSES,
+  TRACKING_STATUSES,
   NOTIFICATION_TYPES,
   COUPON_TYPES,
   INVENTORY_LOG_TYPES,

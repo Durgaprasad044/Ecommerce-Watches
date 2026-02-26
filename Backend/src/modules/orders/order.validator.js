@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
-const { PAYMENT_METHODS } = require('../../utils/constants');
+const { PAYMENT_METHODS, TRACKING_STATUSES } = require('../../utils/constants');
 
 const orderItemSchema = Joi.object({
   watch_id: Joi.string().uuid().required(),
@@ -36,4 +36,21 @@ const updateOrderStatusSchema = Joi.object({
     .required(),
 });
 
-module.exports = { createOrderSchema, updateOrderStatusSchema };
+const verifyPaymentSchema = Joi.object({
+  razorpay_order_id: Joi.string().required(),
+  razorpay_payment_id: Joi.string().required(),
+  razorpay_signature: Joi.string().required(),
+});
+
+const updateTrackingSchema = Joi.object({
+  tracking_status: Joi.string()
+    .valid(...Object.values(TRACKING_STATUSES))
+    .required(),
+});
+
+module.exports = {
+  createOrderSchema,
+  updateOrderStatusSchema,
+  verifyPaymentSchema,
+  updateTrackingSchema,
+};

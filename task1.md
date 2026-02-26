@@ -1,154 +1,65 @@
-Fix my Firebase authentication to behave like a real production website.
+# Razorpay "Failed to Fetch" Error — Debug Master Prompt
 
-Current Issue:
-After selecting a Google email, it does not properly show the Continue / Cancel confirmation behavior and authentication state is inconsistent. The login does not behave like real websites with real-time session persistence.
+You are a senior full-stack debugging expert.
 
-I want a professional production-ready Firebase authentication setup with:
+I am getting a **“Failed to fetch”** error when clicking the Razorpay payment button.
 
-1. Google Authentication
-2. Real-time auth state tracking
-3. Proper loading states
-4. Continue / Cancel handling
-5. Persistent login session
-6. Backend token integration
-7. Clean React architecture
+Your task is to fully diagnose and fix the issue without rewriting the entire project.
 
-Implement the following:
+---
 
--------------------------------------------------------
-1️⃣ Firebase Setup
--------------------------------------------------------
+## GOAL
 
-Create firebase.js with:
+Fix the network error so that:
 
-- initializeApp
-- getAuth
-- GoogleAuthProvider
-- setPersistence(auth, browserLocalPersistence)
+- Frontend successfully connects to backend
+- Backend creates Razorpay order correctly
+- Razorpay checkout opens properly
+- “Failed to fetch” error is completely removed
 
-Ensure persistence is LOCAL so user stays logged in after refresh.
+---
 
--------------------------------------------------------
-2️⃣ Authentication Flow
--------------------------------------------------------
+## WHAT YOU MUST CHECK AND FIX
 
-Use signInWithPopup(auth, provider) for Google login.
+1. Confirm backend server is running on the correct port.
+2. Verify frontend API base URL configuration.
+3. Fix incorrect or mismatched endpoint paths.
+4. Ensure CORS is configured correctly:
+   - Allow correct frontend origin
+   - Allow credentials if required
+5. Ensure environment variables are properly loaded in both frontend and backend.
+6. Ensure API base URL is not undefined.
+7. Verify fetch/axios call:
+   - Correct HTTP method
+   - Proper headers
+   - Proper JSON body
+8. Ensure Razorpay order creation route exists and returns valid JSON.
+9. Add proper try/catch blocks in backend controllers.
+10. Add logging to detect backend crashes.
+11. Fix any unhandled promise rejections.
+12. Ensure backend always returns a response (no hanging requests).
 
-Handle:
+---
 
-- loading state before popup
-- success state
-- error state
-- cancellation handling (error.code === 'auth/popup-closed-by-user')
+## STRICT RULES
 
-If user cancels, show message:
-"Login cancelled by user"
+- Do NOT rewrite the entire project.
+- Modify only necessary files.
+- Do NOT change UI text.
+- Do NOT change button labels.
+- No hardcoding.
+- Maintain clean architecture.
+- Show exactly which files were modified.
+- Show corrected code snippets only.
+- If any required configuration is missing, ask before proceeding.
 
--------------------------------------------------------
-3️⃣ Real-Time Auth Listener
--------------------------------------------------------
+---
 
-Use onAuthStateChanged(auth, callback)
+## EXPECTED RESULT
 
-In AuthContext:
+After fixes:
 
-- user state
-- loading state
-- login()
-- logout()
-- isAuthenticated boolean
-
-On app load:
-- show spinner until Firebase confirms session
-- automatically set user if session exists
-
--------------------------------------------------------
-4️⃣ Proper Login Button Behavior
--------------------------------------------------------
-
-When user clicks "Login with Google":
-
-- Disable button
-- Show spinner inside button
-- Await signInWithPopup
-- Handle errors properly
-- Re-enable button if error
-
--------------------------------------------------------
-5️⃣ Logout
--------------------------------------------------------
-
-Implement signOut(auth)
-Clear context state
-Redirect to login page
-
--------------------------------------------------------
-6️⃣ Backend JWT Integration (Important)
--------------------------------------------------------
-
-After Firebase login success:
-
-- Get Firebase ID token using:
-  user.getIdToken()
-
-- Send this token to backend:
-  POST /api/v1/auth/firebase-login
-
-Backend should:
-- Verify Firebase token
-- Create or fetch user
-- Issue backend JWT
-- Return backend token
-
-Store backend JWT in:
-- httpOnly cookie (preferred)
-OR
-- localStorage (if necessary)
-
--------------------------------------------------------
-7️⃣ Proper Error Handling
--------------------------------------------------------
-
-Handle errors:
-
-auth/popup-closed-by-user
-auth/network-request-failed
-auth/unauthorized-domain
-
-Display proper UI messages.
-
--------------------------------------------------------
-8️⃣ Protect Routes
--------------------------------------------------------
-
-Use a ProtectedRoute component:
-
-If loading → show Spinner
-If !user → redirect to /login
-Else render component
-
--------------------------------------------------------
-9️⃣ App Initialization
--------------------------------------------------------
-
-Wrap App in AuthProvider
-Ensure onAuthStateChanged runs once
-Avoid multiple listeners
-
--------------------------------------------------------
-🔟 Final Result Required
--------------------------------------------------------
-
-Login should behave like:
-
-- Real Google account selection
-- Continue / Cancel popup
-- Persistent session after refresh
-- Instant UI update on login
-- Proper logout
-- Production-grade architecture
-
-Code must be clean, modular, and production-ready.
-No hacks.
-No temporary fixes.
-Proper async/await.
+- Clicking the Razorpay button sends a successful backend request
+- Backend responds with valid Razorpay order data
+- Razorpay checkout opens
+- No “Failed to fetch” error appears

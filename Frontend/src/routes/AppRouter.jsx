@@ -7,6 +7,10 @@ import Home from "../pages/customer/Home";
 import Catalog from "../pages/customer/Catalog";
 import WatchDetail from "../pages/customer/WatchDetail";
 import Cart from "../pages/customer/Cart";
+import Checkout from "../pages/customer/Checkout";
+import OrderList from "../pages/customer/OrderList";
+import OrderDetail from "../pages/customer/OrderDetail";
+import Wishlist from "../pages/customer/Wishlist";
 import Profile from "../pages/customer/Profile";
 
 /* ---------- AUTH ---------- */
@@ -44,6 +48,10 @@ export default function AppRouter() {
         {/* ---------- CUSTOMER PROTECTED ---------- */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<OrderList />} />
+          <Route path="/orders/:id" element={<OrderDetail />} />
         </Route>
 
         {/* ================================================== */}

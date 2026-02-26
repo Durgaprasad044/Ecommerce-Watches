@@ -8,14 +8,18 @@ const { supabaseAdmin } = require('./config/supabase');
 let server;
 
 const startServer = async () => {
-  // Verify Supabase connection on startup
+  // Verify Supabase connection on startup (non-fatal in dev)
   try {
     const { error } = await supabaseAdmin.from('users').select('id').limit(1);
     if (error) throw error;
     logger.info('✅ Supabase connection verified.');
   } catch (err) {
     logger.error(`❌ Supabase connection failed: ${err.message}`);
-    process.exit(1);
+    if (env.isProd()) {
+      process.exit(1);
+    } else {
+      logger.warn('⚠️  Continuing without Supabase in dev mode. DB calls will fail.');
+    }
   }
 
   server = app.listen(env.PORT, () => {

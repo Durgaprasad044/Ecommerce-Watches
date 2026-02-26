@@ -102,7 +102,7 @@ export default function Cart() {
               <span className="font-bold text-lg text-gray-900">Total</span>
               <span className="font-extrabold text-2xl text-gray-900"><PriceTag price={cartTotal} /></span>
             </div>
-            <Button size="lg" className="w-full mb-4">Proceed to Checkout</Button>
+            <Button size="lg" className="w-full mb-4" onClick={() => navigate('/checkout')}>Proceed to Checkout</Button>
             <p className="text-xs text-center text-gray-500 flex items-center justify-center gap-1">
               <FiShield /> Secure SSL checkout
             </p>
