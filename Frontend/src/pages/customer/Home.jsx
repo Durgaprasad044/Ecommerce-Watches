@@ -7,21 +7,19 @@ import Spinner from "../../components/common/Spinner";
 import { watches as mockWatches } from "../../data/watches";
 import useCart from "../../hooks/useCart";
 
-// CATEGORY IMAGES
+/* CATEGORY IMAGES */
 import luxuryImg from "../../assets/luxury.png";
 import sportsImg from "../../assets/sports.png";
 import vintageImg from "../../assets/vintage.png";
 
-// BRAND IMAGES
+/* BRAND IMAGES */
 import rolexImg from "../../assets/rl.png";
 import omegaImg from "../../assets/o1.png";
 import patekImg from "../../assets/pp1.png";
 import audemarsImg from "../../assets/ap1.png";
 
-
-
 /* ===========================
-   BRAND CARD (FIXED IMAGE)
+   BRAND CARD
 =========================== */
 const BrandCard = ({ brand, tagline, img, onSelected }) => {
   return (
@@ -29,17 +27,14 @@ const BrandCard = ({ brand, tagline, img, onSelected }) => {
       className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer border border-gray-800 hover:border-gray-500 transition-all duration-700"
       onClick={() => onSelected(brand)}
     >
-      {/* IMAGE */}
       <img
         src={img}
         alt={brand}
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
       />
 
-      {/* DARK OVERLAY */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
 
-      {/* TEXT */}
       <div className="absolute inset-x-0 bottom-0 p-8 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
         <h3 className="text-3xl font-bold text-white mb-2">{brand}</h3>
         <p className="text-gray-300 mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -52,8 +47,6 @@ const BrandCard = ({ brand, tagline, img, onSelected }) => {
     </div>
   );
 };
-
-
 
 /* ===========================
    WATCH CARD
@@ -83,9 +76,13 @@ const FeaturedWatchCard = ({ watch }) => {
           {watch.brand}
         </div>
 
-        <h4 className="text-lg font-bold text-white mb-4">
+        <h4 className="text-lg font-bold text-white mb-2">
           {watch.model}
         </h4>
+
+        <p className="text-zinc-400 font-semibold mb-4">
+          ${watch.price.toLocaleString()}
+        </p>
 
         <button
           onClick={handleAddToCart}
@@ -110,8 +107,6 @@ const FeaturedWatchCard = ({ watch }) => {
   );
 };
 
-
-
 /* ===========================
    HOME PAGE
 =========================== */
@@ -122,6 +117,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
+    setFeatured(mockWatches.slice(0, 8));
     setLoading(false);
   }, []);
 
@@ -148,28 +144,65 @@ export default function Home() {
   });
 
   return (
-    <PageWrapper className="py-0 px-0 max-w-none">
+    <PageWrapper className="py-0 max-w-none bg-white">
 
-      {/* FEATURED WATCHES */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-10">Featured Watches</h2>
-
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <Spinner />
-          </div>
-        ) : (
-          <WatchGrid watches={featured} />
-        )}
+      {/* HERO SECTION */}
+      <section className="bg-black text-white py-40 text-center">
+        <div className="max-w-4xl mx-auto px-6">
+          <h1 className="text-6xl font-bold mb-6">
+            Timeless Craftsmanship
+          </h1>
+          <p className="text-gray-400 text-lg mb-10">
+            Discover iconic timepieces engineered for precision and built to last generations.
+          </p>
+          <Link
+            to="/catalog"
+            className="inline-block bg-white text-black px-10 py-4 rounded-full font-semibold hover:bg-gray-200 transition-all duration-300"
+          >
+            Explore Collection
+          </Link>
+        </div>
       </section>
 
+      {/* FEATURED WATCHES */}
+      <section className="bg-white py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex justify-between items-center mb-14">
+            <div>
+              <h2 className="text-4xl font-bold tracking-tight">
+                Featured Watches
+              </h2>
+              <p className="text-gray-500 mt-3">
+                Curated selections from our premium collection.
+              </p>
+            </div>
+
+            <Link
+              to="/catalog"
+              className="text-sm font-semibold tracking-wide text-black hover:underline"
+            >
+              View All →
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <Spinner />
+            </div>
+          ) : (
+            <WatchGrid watches={featured} />
+          )}
+        </div>
+      </section>
 
       {/* FEATURED BRANDS */}
       <section className="bg-zinc-950 py-32 border-y border-gray-900">
-        <div className="max-w-7xl mx-auto px-4">
-
-          <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-sm tracking-[0.3em] text-gray-500 uppercase mb-4">
+              Heritage & Prestige
+            </h2>
+            <h3 className="text-5xl font-bold text-white">
               Featured Luxury Brands
             </h3>
           </div>
@@ -186,11 +219,9 @@ export default function Home() {
             ))}
           </div>
 
-
           {selectedBrand && (
             <div className="mt-24 pt-16 border-t border-zinc-800">
-              <div className="flex justify-between mb-10">
-
+              <div className="flex justify-between items-center mb-10">
                 <h3 className="text-3xl font-bold text-white">
                   {selectedBrand} Collection
                 </h3>
@@ -207,7 +238,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {displayedWatches.map((watch) => (
                   <FeaturedWatchCard key={watch.id} watch={watch} />
                 ))}
@@ -217,18 +248,19 @@ export default function Home() {
         </div>
       </section>
 
-
-
-      {/* SHOP BY CATEGORY (FIXED IMAGES) */}
-      <section className="bg-gray-50 py-24">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-10">
-            Shop by Category
-          </h2>
+      {/* SHOP BY CATEGORY */}
+      <section className="bg-gray-100 py-28">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight">
+              Shop by Category
+            </h2>
+            <p className="text-gray-500 mt-3">
+              Explore collections tailored to your lifestyle.
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            {/* LUXURY */}
             <Link
               to="/catalog?category=luxury"
               className="group relative h-80 rounded-2xl overflow-hidden block"
@@ -236,6 +268,7 @@ export default function Home() {
               <img
                 src={luxuryImg}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                alt="Luxury"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
               <div className="absolute bottom-6 left-6 text-white text-2xl font-bold">
@@ -243,7 +276,6 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* SPORTS */}
             <Link
               to="/catalog?category=sports"
               className="group relative h-80 rounded-2xl overflow-hidden block"
@@ -251,6 +283,7 @@ export default function Home() {
               <img
                 src={sportsImg}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                alt="Sports"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
               <div className="absolute bottom-6 left-6 text-white text-2xl font-bold">
@@ -258,7 +291,6 @@ export default function Home() {
               </div>
             </Link>
 
-            {/* VINTAGE */}
             <Link
               to="/catalog?category=vintage"
               className="group relative h-80 rounded-2xl overflow-hidden block"
@@ -266,13 +298,13 @@ export default function Home() {
               <img
                 src={vintageImg}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                alt="Vintage"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
               <div className="absolute bottom-6 left-6 text-white text-2xl font-bold">
                 Vintage
               </div>
             </Link>
-
           </div>
         </div>
       </section>

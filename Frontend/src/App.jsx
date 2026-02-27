@@ -42,12 +42,12 @@ import RevenueChart from './components/vendor/RevenueChart.jsx';
 import InventoryTable from './components/vendor/InventoryTable.jsx';
 import LowStockAlert from './components/vendor/LowStockAlert.jsx';
 import TopWatches from './components/vendor/TopWatches.jsx';
-import { AuthContext } from './context/AuthContext.jsx';
+import { AuthContext, AuthProvider } from './context/AuthContext.jsx';
 import CartContext from './context/CartContext.jsx';
-import WishlistContext from './context/WishlistContext.jsx';
+//import WishlistContext from './context/WishlistContext.jsx';
 import useAuth from './hooks/useAuth.js';
 import { CartProvider } from "./context/CartContext.jsx";
-import useWishlist from './hooks/useWishlist.js';
+//import useWishlist from './hooks/useWishlist.js';
 import useFilters from './hooks/useFilters.js';
 import usePagination from './hooks/usePagination.js';
 import useDebounce from './hooks/useDebounce.js';
@@ -79,11 +79,17 @@ import formatDate from './utils/formatDate.js';
 import validateSchema from './utils/validateSchema.js';
 import * as constants from './utils/constants.js';
 import './styles/globals.css';
-
+import { WishlistProvider } from "./context/WishlistContext";
 function App() {
-  return( <CartProvider> 
+  return(
+    <AuthProvider>
+     <CartProvider> 
+    <WishlistProvider>
     <AppRouter />
-    </CartProvider>);
+    </WishlistProvider>
+    </CartProvider>
+    </AuthProvider>
+    );
 }
 
 export default App;

@@ -1,91 +1,81 @@
-import { createContext, useState, useCallback, useMemo } from 'react';
-import wishlistService from '../api/wishlistService';
-import { useAuth } from './AuthContext';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import wishlistService from "../api/wishlistService";
+import { useAuth } from "./AuthContext";
 
 const WishlistContext = createContext();
 
-export function WishlistProvider({ children }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const { isAuthenticated } = useAuth();
+export const WishlistProvider = ({ children }) => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
 
-  // Fetch wishlist from backend
-  const fetchWishlist = useCallback(async () => {
-    if (!isAuthenticated) {
-      setItems([]);
-      return;
-    }
-    setLoading(true);
-    setError(null);
+  const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadWishlist = async () => {
     try {
+      setLoading(true);
       const res = await wishlistService.getWishlist();
-      // Backend returns { data: [...] }
-      const list = res?.data || [];
-      // Deduplicate by watch id
-      const uniqueMap = new Map();
-      list.forEach((item) => {
-        const watch = item.watches || item;
-        if (watch?.id && !uniqueMap.has(watch.id)) {
-          uniqueMap.set(watch.id, { ...item, watches: watch });
-        }
-      });
-      setItems(Array.from(uniqueMap.values()));
+      setWishlist(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch wishlist.');
+      console.error("Wishlist load error:", err);
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  };
 
-  // Toggle wishlist (add if not present, remove if present)
-  const toggleWishlist = useCallback(async (watch) => {
-    if (!isAuthenticated) return { redirectToLogin: true };
-
-    const watchId = watch?.id;
-    if (!watchId) return;
-
+  const addToWishlist = async (watchId) => {
     try {
-      const isCurrentlyInList = items.some(
-        (item) => (item.watches?.id || item.watch_id) === watchId
-      );
-
-      if (isCurrentlyInList) {
-        await wishlistService.removeFromWishlist(watchId);
-        setItems((prev) =>
-          prev.filter((item) => (item.watches?.id || item.watch_id) !== watchId)
-        );
-      } else {
-        await wishlistService.addToWishlist(watchId);
-        // Optimistically add to local state
-        setItems((prev) => [
-          ...prev,
-          { watch_id: watchId, watches: watch, created_at: new Date().toISOString() },
-        ]);
-      }
-      return { success: true };
+      await wishlistService.addToWishlist(watchId);
+      await loadWishlist();
     } catch (err) {
-      setError(err.response?.data?.message || 'Wishlist action failed.');
-      return { error: true };
+      console.error("Add wishlist error:", err);
     }
-  }, [isAuthenticated, items]);
+  };
 
-  // Check if a watch is in the wishlist
-  const isInWishlist = useCallback(
-    (watchId) => items.some((item) => (item.watches?.id || item.watch_id) === watchId),
-    [items]
-  );
+  const removeFromWishlist = async (watchId) => {
+    try {
+      await wishlistService.removeFromWishlist(watchId);
+      await loadWishlist();
+    } catch (err) {
+      console.error("Remove wishlist error:", err);
+    }
+  };
 
-  const value = useMemo(
-    () => ({ items, loading, error, fetchWishlist, toggleWishlist, isInWishlist }),
-    [items, loading, error, fetchWishlist, toggleWishlist, isInWishlist]
-  );
+  const isInWishlist = (watchId) => {
+    return wishlist.some(item => item.watch_id === watchId || item.id === watchId);
+  };
+
+  const toggleWishlist = async (watch) => {
+    if (isInWishlist(watch.id)) {
+      await removeFromWishlist(watch.id);
+    } else {
+      await addToWishlist(watch.id);
+    }
+  };
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      loadWishlist();
+    }
+
+    if (!isAuthenticated) {
+      setWishlist([]);
+    }
+  }, [isAuthenticated, authLoading]);
 
   return (
-    <WishlistContext.Provider value={value}>
+    <WishlistContext.Provider
+      value={{
+        wishlist,
+        loading,
+        addToWishlist,
+        removeFromWishlist,
+        toggleWishlist,
+        isInWishlist,
+      }}
+    >
       {children}
     </WishlistContext.Provider>
   );
-}
+};
 
-export default WishlistContext;
+export const useWishlist = () => useContext(WishlistContext);

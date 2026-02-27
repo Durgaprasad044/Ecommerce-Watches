@@ -1,19 +1,51 @@
-import axiosInstance from './axiosInstance';
+import axios from "axios";
+import { auth } from "../firebase/firebase";   // ✅ use initialized auth
+
+const API = "http://localhost:5000/api/v1";
+
+const getToken = async () => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("User not logged in");
+  }
+
+  return await user.getIdToken();
+};
 
 const wishlistService = {
-  getWishlist: async () => {
-    const response = await axiosInstance.get('/wishlist');
-    return response.data;
+  addToWishlist: async (watchId) => {
+    const token = await getToken();
+
+    return axios.post(
+      `${API}/wishlist/${watchId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   },
 
-  addToWishlist: async (watchId) => {
-    const response = await axiosInstance.post(`/wishlist/${watchId}`);
-    return response.data;
+  getWishlist: async () => {
+    const token = await getToken();
+
+    return axios.get(`${API}/wishlist`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   },
 
   removeFromWishlist: async (watchId) => {
-    const response = await axiosInstance.delete(`/wishlist/${watchId}`);
-    return response.data;
+    const token = await getToken();
+
+    return axios.delete(`${API}/wishlist/${watchId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   },
 };
 

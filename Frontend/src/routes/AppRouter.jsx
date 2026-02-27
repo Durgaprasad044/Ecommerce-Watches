@@ -62,15 +62,17 @@ export default function AppRouter() {
           <Route element={<RoleRoute role="vendor" />}>
             <Route path="/vendor" element={<VendorLayout />}>
 
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="add" element={<AddWatch />} />
-              <Route path="manage" element={<ManageWatches />} />
-              <Route path="orders" element={<VendorOrders />} />
-              <Route path="analytics" element={<Analytics />} />
-              <Route path="inventory" element={<Inventory />} />
-              <Route path="edit/:id" element={<EditWatch />} />
+  <Route index element={<Dashboard />} />  {/* 🔥 THIS LINE */}
 
-            </Route>
+  <Route path="dashboard" element={<Dashboard />} />
+  <Route path="add" element={<AddWatch />} />
+  <Route path="manage" element={<ManageWatches />} />
+  <Route path="orders" element={<VendorOrders />} />
+  <Route path="analytics" element={<Analytics />} />
+  <Route path="inventory" element={<Inventory />} />
+  <Route path="edit/:id" element={<EditWatch />} />
+
+</Route>
           </Route>
         </Route>
 

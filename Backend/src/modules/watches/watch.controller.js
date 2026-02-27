@@ -1,59 +1,69 @@
-'use strict';
+const { supabase } = require("../../config/supabase");
 
-const asyncHandler = require('../../utils/asyncHandler');
-const { sendSuccess, sendPaginated } = require('../../utils/response');
-const watchService = require('./watch.service');
+exports.createWatch = async (req, res) => {
+  try {
+    const { name, brand, price, description } = req.body;
+    const file = req.file;
 
-const getAllWatches = asyncHandler(async (req, res) => {
-  const result = await watchService.getAllWatches(req.query);
-  return sendPaginated(res, result.data, result, 'Watches retrieved successfully.');
-});
+    if (!file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
 
-const getWatchById = asyncHandler(async (req, res) => {
-  const watch = await watchService.getWatchById(req.params.id);
-  return sendSuccess(res, watch, 'Watch retrieved successfully.');
-});
+    const fileName = `${Date.now()}-${file.originalname}`;
 
-const getFeaturedWatches = asyncHandler(async (req, res) => {
-  const watches = await watchService.getFeaturedWatches();
-  return sendSuccess(res, watches, 'Featured watches retrieved.');
-});
+    // Upload image to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from(process.env.SUPABASE_STORAGE_BUCKET)
+      .upload(fileName, file.buffer, {
+        contentType: file.mimetype,
+      });
 
-const searchWatches = asyncHandler(async (req, res) => {
-  const result = await watchService.searchWatches(req.query);
-  return sendPaginated(res, result.data, result, 'Search results.');
-});
+    if (uploadError) {
+      return res.status(500).json({ error: uploadError.message });
+    }
 
-const createWatch = asyncHandler(async (req, res) => {
-  const watch = await watchService.createWatch(req.body);
-  return sendSuccess(res, watch, 'Watch created successfully.', 201);
-});
+    // Get public URL
+    const { data } = supabase.storage
+      .from(process.env.SUPABASE_STORAGE_BUCKET)
+      .getPublicUrl(fileName);
 
-const updateWatch = asyncHandler(async (req, res) => {
-  const watch = await watchService.updateWatch(req.params.id, req.body);
-  return sendSuccess(res, watch, 'Watch updated successfully.');
-});
+    const imageUrl = data.publicUrl;
 
-const deleteWatch = asyncHandler(async (req, res) => {
-  await watchService.deleteWatch(req.params.id);
-  return sendSuccess(res, null, 'Watch deleted successfully.');
-});
+    // Insert into Supabase table
+    const { data: insertedWatch, error } = await supabase
+      .from("watches")
+      .insert([
+        {
+          name,
+          brand,
+          price,
+          description,
+          image_url: imageUrl,
+          vendor_id: req.user.id,
+        },
+      ])
+      .select();
 
-const uploadWatchImages = asyncHandler(async (req, res) => {
-  if (!req.files || req.files.length === 0) {
-    return sendSuccess(res, [], 'No files uploaded.');
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(201).json(insertedWatch);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-  const urls = await watchService.uploadWatchImages(req.params.id, req.files);
-  return sendSuccess(res, { urls }, 'Images uploaded successfully.', 201);
-});
+};
 
-module.exports = {
-  getAllWatches,
-  getWatchById,
-  getFeaturedWatches,
-  searchWatches,
-  createWatch,
-  updateWatch,
-  deleteWatch,
-  uploadWatchImages,
+exports.getAllWatches = async (req, res) => {
+  const { data, error } = await supabase
+    .from("watches")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.json(data);
 };

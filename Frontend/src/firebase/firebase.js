@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, setPersistence, inMemoryPersistence } from "firebase/auth";
+import { getAuth, setPersistence, inMemoryPersistence, browserLocalPersistence } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAAGsC81r_M6TrGxa3JyPvtq-eN8zOkZbU",
@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
 // IN-MEMORY persistence — session dies on page refresh / tab close
-setPersistence(auth, inMemoryPersistence)
+setPersistence(auth, browserLocalPersistence)
   .catch((error) => console.error("Firebase persistence error:", error));
 
 export default app;
