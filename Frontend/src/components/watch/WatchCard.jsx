@@ -14,7 +14,7 @@ export default function WatchCard({ watch }) {
   const navigate = useNavigate();
 
   // Check if watch is already in wishlist
-  const wishlisted = wishlist?.some((item) => item.id === watch.id);
+  const wishlisted = wishlist?.some((item) => item.watches?.id === watch.id || item.watch_id === watch.id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();

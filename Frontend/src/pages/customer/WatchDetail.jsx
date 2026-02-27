@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import PageWrapper from '../../components/layout/PageWrapper';
 import Button from '../../components/common/Button';
 import PriceTag from '../../components/watch/PriceTag';
 import Badge from '../../components/common/Badge';
 import Spinner from '../../components/common/Spinner';
 import { FiCheck, FiTruck, FiShield, FiHeart } from 'react-icons/fi';
+import { FaHeart } from 'react-icons/fa';
+import { useWishlist } from '../../context/WishlistContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function WatchDetail() {
   const { id } = useParams();
   const [watch, setWatch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // TODO: Fetch watch by ID from API
@@ -26,6 +33,25 @@ export default function WatchDetail() {
   if (error || !watch) {
     return <PageWrapper className="flex justify-center items-center"><p className="text-gray-500 mt-20">Watch not found or error loading details.</p></PageWrapper>;
   }
+
+  const wishlisted = wishlist?.some((item) => item.watches?.id === watch.id || item.watch_id === watch.id);
+
+  const handleToggleWishlist = async () => {
+    if (!isAuthenticated) {
+      navigate('/auth/login');
+      return;
+    }
+    
+    try {
+      if (wishlisted) {
+        await removeFromWishlist(watch.id);
+      } else {
+        await addToWishlist(watch.id);
+      }
+    } catch (err) {
+      console.error("Wishlist toggle error:", err);
+    }
+  };
 
   return (
     <PageWrapper>
@@ -70,7 +96,9 @@ export default function WatchDetail() {
 
           <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-8 border-t border-gray-100">
             <Button size="lg" className="flex-1 py-4 text-lg" disabled={!watch.stock}>Add to Cart</Button>
-            <Button size="lg" variant="outline" className="px-6 border-2"><FiHeart className="w-6 h-6" /></Button>
+            <Button size="lg" onClick={handleToggleWishlist} variant="outline" className={`px-6 border-2 transition-colors ${wishlisted ? 'border-red-500 text-red-500 hover:bg-red-50' : 'text-gray-400 hover:border-gray-900 hover:text-gray-900'}`} title={wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}>
+              {wishlisted ? <FaHeart className="w-6 h-6" /> : <FiHeart className="w-6 h-6" />}
+            </Button>
           </div>
         </div>
       </div>

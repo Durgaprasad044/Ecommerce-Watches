@@ -34,7 +34,11 @@ const toggleWishlist = async (userId, watchId) => {
   if (!watch) throw new AppError('Watch not found.', 404);
 
   // Add
-  await db.from('wishlist_items').insert({ user_id: userId, watch_id: watchId });
+  const { error } = await db.from('wishlist_items').insert({ user_id: userId, watch_id: watchId });
+  if (error) {
+    console.error('Insert wishlist error:', error);
+    throw new AppError('Failed to update wishlist.', 500, false);
+  }
   return { action: 'added' };
 };
 

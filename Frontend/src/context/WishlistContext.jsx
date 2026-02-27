@@ -14,7 +14,8 @@ export const WishlistProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await wishlistService.getWishlist();
-      setWishlist(res.data);
+      // Ensure we extract the data array from the sendSuccess response payload wrapper
+      setWishlist(res?.data?.data || []);
     } catch (err) {
       console.error("Wishlist load error:", err);
     } finally {
